@@ -62,7 +62,7 @@ def CVEcheck(techversion):
 
 	soup = BeautifulSoup(response, 'html.parser')
 	for link in soup.find_all('a', href=lambda href: href and '/cgi-bin/cvename.cgi?name=' in href):
-		print(bcolors.OK+"[+] "+bcolors.RESET+"CVE associée: ", link.string, "lien: ", "https://cve.mitre.org"+link.get('href'))
+		print(bcolors.OK+"[+] "+bcolors.RESET+"Associated CVE: ", link.string, "link: ", "https://cve.mitre.org"+link.get('href'))
 	
 def main():
 	if args.url:
