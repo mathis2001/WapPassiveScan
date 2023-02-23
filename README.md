@@ -22,21 +22,28 @@ First, You will have to create an account on https://www.wappalyzer.com/. Then, 
 After that, all you have to do is creating a variable named 'WAPPALYZER' in your environment variables containing the key and starting using the tool like that:
 
 ```bash
-./WapPassiveScan.py [-u url] [-l list of urls]
+./WapPassiveScan.py [-u url] [-l list of urls] [-o output file]
 ```
 
 
 ## Options:
 ```bash
-  -h, --help  show this help message and exit
+  -h, --help    show this help message and exit
   
-  -u, --url   target a single url
+  -u, --url     target a single url
   
-  -l, --list  target a list of urls in a file
- 
+  -l, --list    target a list of urls in a file
+  
+  -o, --output  output filename
 ```
 ## Screenshots:
 
 ![image](https://user-images.githubusercontent.com/40497633/220649892-64b5d5d0-2b23-46b3-a056-f0da637e8621.png)
 
 ![image](https://user-images.githubusercontent.com/40497633/220650116-e85c07b3-6102-4208-be58-2168a42d8e8d.png)
+
+[Capture vidéo 15:57:41.webm](https://user-images.githubusercontent.com/40497633/220944085-39d89b9e-6e1f-4a9b-a7df-e034ab889918.webm)
+
+## To Do:
+
+- Reduce false positives
