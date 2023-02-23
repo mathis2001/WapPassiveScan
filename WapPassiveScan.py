@@ -14,12 +14,23 @@ class bcolors:
 parser = argparse.ArgumentParser()
 parser.add_argument("-u", "--url", help="Target a single url", type=str)
 parser.add_argument("-l", "--list", help="Target a list of urls", type=str)
+parser.add_argument("-o", "--output", help="Output file", type=str)
 args= parser.parse_args()
 
 API=getenv('WAPPALYZER')
 endpoint = 'https://api.wappalyzer.com/lookup/v2/?urls='
 headers = {'x-api-key' : API}
 tab = PrettyTable(['Technology','Version','Category'])
+
+def banner():
+	print('''
+			           __             __         
+			|  | _  _ |__)_  _ _.   _(_  _ _  _  
+			|/\|(_||_)|  (_|_)_)|\/(-__)(_(_|| ) 
+			       |by S1rN3tZ                   
+
+	''')
+
 
 
 def APICall(url):
@@ -59,12 +70,19 @@ def CVEcheck(techversion):
 	SearchUrl = 'https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword='+techversion
 	CheckRequest = requests.get(SearchUrl)
 	response = CheckRequest.text
+	CVEList=[]
 
 	soup = BeautifulSoup(response, 'html.parser')
 	for link in soup.find_all('a', href=lambda href: href and '/cgi-bin/cvename.cgi?name=' in href):
 		print(bcolors.OK+"[+] "+bcolors.RESET+"Associated CVE: ", link.string, "link: ", "https://cve.mitre.org"+link.get('href'))
+		CVE = "Associated CVE: "+link.string+" link: "+" https://cve.mitre.org"+link.get('href')+'\n'
+		CVEList.append(CVE)
+	return CVEList
 	
 def main():
+	if args.output:
+		file = args.output
+		log = open(file, "w")
 	if args.url:
 		response = APICall(args.url)
 		ResultParsing(response)
@@ -75,10 +93,20 @@ def main():
 		for techversion in TechVersionList:
 			print(bcolors.INFO+"\n[*] "+bcolors.RESET+'Checking for CVEs on',techversion,'\n')
 			CVEcheck(techversion)
+			if args.output:
+				cveList = CVEcheck(techversion)
+				tech = '\nCVE check for '+techversion+':\n\n'
+				log.write(tech)
+				for cve in cveList:
+					log.write(cve)
+		if args.output:
+			log.close()
 	elif args.list:
 		with open(args.list, "r") as urls:
 			for url in urls:
-				print(bcolors.INFO+"[*] "+bcolors.RESET+'Result for',url)
+				print(bcolors.INFO+"\n\n[*] "+bcolors.RESET+'Result for',url)
+				if args.output:
+					log.write(url)
 				response = APICall(url)
 				ResultParsing(response)
 				print(tab)
@@ -88,6 +116,14 @@ def main():
 				for techversion in TechVersionList:
 					print(bcolors.INFO+"\n[*] "+bcolors.RESET+'Checking for CVEs on',techversion,'\n')
 					CVEcheck(techversion)
+					if args.output:
+						cveList = CVEcheck(techversion)
+						tech = '\nCVE check for '+techversion+':\n\n'
+						log.write(tech)
+						for cve in cveList:
+							log.write(cve)
+			if args.output:
+				log.close()
 	print('\n')
 
 	credits = 'https://api.wappalyzer.com/v2/credits/balance/'
@@ -97,6 +133,7 @@ def main():
 	print(bcolors.WARNING+"[-] "+bcolors.RESET+str(respcred['credits']),'credits remaining.\n')
 
 try:
+	banner()
 	main()
 except KeyboardInterrupt:
         print(bcolors.FAIL+"[!] "+bcolors.RESET+"Script canceled.")
